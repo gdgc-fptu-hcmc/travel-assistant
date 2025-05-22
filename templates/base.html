@@ -428,14 +428,23 @@
         <i class="fas fa-arrow-left"></i>
         <span>Home</span>
       </a>
+      <a href="{{ url_for('project_idea') }}" class="page-nav-button next">
+        <span>Project Idea</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+      {% elif request.endpoint == 'project_idea' %}
+      <a href="{{ url_for('author') }}" class="page-nav-button prev">
+        <i class="fas fa-arrow-left"></i>
+        <span>Author</span>
+      </a>
       <a href="{{ url_for('project_docs') }}" class="page-nav-button next">
         <span>Project Docs</span>
         <i class="fas fa-arrow-right"></i>
       </a>
       {% elif request.endpoint == 'project_docs' %}
-      <a href="{{ url_for('author') }}" class="page-nav-button prev">
+      <a href="{{ url_for('project_idea') }}" class="page-nav-button prev">
         <i class="fas fa-arrow-left"></i>
-        <span>Author</span>
+        <span>Project Idea</span>
       </a>
       <a href="{{ url_for('chatbot') }}" class="page-nav-button next">
         <span>Chat Assistant</span>
