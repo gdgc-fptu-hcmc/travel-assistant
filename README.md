@@ -49,7 +49,7 @@ The system provides RESTful APIs for each agent's functionality. Detailed API do
 
 ## Deployment
 
-The system is designed to be deployed on Google Cloud Platform (GCP) using Vertex AI.
+The system is designed to be deployed on Google Cloud Platform (GCP) using Gemini AI and App Engine.
 
 ## Free APIs Used
 
