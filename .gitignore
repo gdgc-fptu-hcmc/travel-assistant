@@ -33,3 +33,5 @@ ENV/
 .vscode/
 *.swp
 *.swo .env
+.env
+app.yaml
