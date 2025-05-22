@@ -9,5 +9,5 @@ automatic_scaling:
   max_instances: 2
 
 env_variables:
-  SECRET_KEY: "a866a2f2dc79655511e4a2e81ecac3ad837877d8807635e774606ff02e02b29e"
-  GEMINI_API_KEY: "AIzaSyA52W-_mictPMls_n8jX8SRaPIF3-ci1_E"
+  SECRET_KEY: "your_secret_key_here"
+  GEMINI_API_KEY: "your_gemini_api_key_here" 
