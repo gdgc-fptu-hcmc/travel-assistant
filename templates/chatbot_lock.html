@@ -1,18 +1,31 @@
-{% extends "base.html" %}
-
-{% block title %}Chatbot Access - Security Question{% endblock %}
-
-{% block content %}
-<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 60vh;">
-    <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
-        <h4 class="mb-3 text-center">🔒 Chatbot Access</h4>
-        <form method="POST" autocomplete="off">
-            <div class="mb-3">
-                <label for="answer" class="form-label">What is the email of Google Developer Groups On Campus FPT University - HCMC, Vietnam?</label>
-                <input type="text" class="form-control" id="answer" name="answer" required autofocus placeholder="Nhập email của CLB">
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Unlock Chatbot</button>
-        </form>
-    </div>
+{% extends "base.html" %} {% block title %}Chatbot Access - Security Question{%
+endblock %} {% block content %}
+<div
+  class="container d-flex flex-column align-items-center justify-content-center"
+  style="min-height: 80vh"
+>
+  <div class="card p-4 shadow" style="max-width: 400px; width: 100%">
+    <h4 class="mb-3 text-center">🔒 Chatbot Access</h4>
+    <form method="POST" autocomplete="off">
+      <div class="mb-3">
+        <label for="answer" class="form-label"
+          >What is the email of Google Developer Groups On Campus FPT University
+          - HCMC, Vietnam?</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="answer"
+          name="answer"
+          required
+          autofocus
+          placeholder="Nhập email của CLB"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">
+        Unlock Chatbot
+      </button>
+    </form>
+  </div>
 </div>
-{% endblock %} 
+{% endblock %}
