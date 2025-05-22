@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}405 - Method Not Allowed{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5 mb-5">
+    <div style="max-width: 500px; margin: 0 auto;">
+        <div style="font-size: 4rem; color: #1976d2; font-weight: bold;">405</div>
+        <h2 class="mt-3 mb-2" style="color: #222;">Method Not Allowed</h2>
+        <p class="mb-4" style="color: #555; font-size: 1.1rem;">
+            The method you used is not allowed for this endpoint.<br>
+            <span style="color: #1976d2;">/api/chat</span> only accepts <b>POST</b> requests from the Chat Assistant application.<br>
+            If you are a developer, please ensure your request uses <b>POST</b> and <b>Content-Type: application/json</b>.
+        </p>
+        <div class="mb-4 p-3" style="background: #f8f9fa; border-radius: 0.7rem; border: 1px solid #e3e3e3;">
+            <b>API Usage Policy</b>
+            <ul class="text-start mt-2" style="color: #666; font-size: 1rem;">
+                <li>This endpoint is restricted to POST requests from the official Chat Assistant client.</li>
+                <li>Direct access via browser or unsupported HTTP methods (GET, PUT, DELETE, etc.) is not permitted.</li>
+                <li>The API is intended solely for chatbot integration within this platform and is not publicly available for third-party use.</li>
+                <li>Unauthorized or improper access attempts may be logged and blocked for security reasons.</li>
+                <li>For integration or partnership inquiries, please contact the system administrator.</li>
+            </ul>
+        </div>
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3" style="padding: 0.6rem 2.2rem; font-size: 1.1rem; border-radius: 2rem;">Back to Home</a>
+    </div>
+</div>
+{% endblock %} 

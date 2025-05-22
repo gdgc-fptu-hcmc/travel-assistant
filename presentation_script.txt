@@ -1,0 +1,52 @@
+1. Giới thiệu bản thân & bối cảnh dự án (1 phút)
+Xin chào mọi người, mình là Nguyễn Đức Tuấn, thành viên của CLB Google Developer Groups On Campus FPT University - HCMC. Hôm nay mình xin trình bày về dự án website Chatbot & Documentation mà mình đã phát triển cho CLB.
+
+2. Đặt vấn đề & mục tiêu (1 phút)
+Trong các sự kiện công nghệ, việc cung cấp thông tin, tài liệu, và hỗ trợ tương tác nhanh cho thành viên là rất quan trọng. Dự án này ra đời với mục tiêu:
+- Tạo một nền tảng web hiện đại, dễ dùng cho CLB.
+- Tích hợp chatbot AI để hỗ trợ hỏi đáp, tư vấn về du lịch, công nghệ, hoặc các chủ đề liên quan.
+- Cung cấp tài liệu, ý tưởng dự án, và thông tin tham khảo cho thành viên.
+
+3. Tổng quan kiến trúc hệ thống (2 phút)
+Website gồm 2 phần chính:
+- Frontend: Giao diện web hiện đại, responsive, sử dụng HTML, CSS, Bootstrap, Jinja2 (Flask template).
+- Backend: Flask (Python) xử lý routing, bảo mật, session, và tích hợp AI agent.
+Ngoài ra, hệ thống sử dụng Google Cloud Platform để deploy, đảm bảo tính sẵn sàng và mở rộng.
+
+4. Demo luồng sử dụng & các trang chính (4 phút)
+Website có các trang chính:
+- Home: Trang chào mừng, giới thiệu CLB, các nút điều hướng rõ ràng.
+- Author: Giới thiệu tác giả, mentor, và thông điệp truyền cảm hứng.
+- Project Docs: Tài liệu về kiến trúc, luồng dữ liệu, các agent AI, API, và hướng dẫn sử dụng.
+- Project Idea: Trình bày ý tưởng, mục tiêu, và các điểm nổi bật của dự án.
+- Reference Docs: Tổng hợp tài liệu, link tham khảo về AI, multi-agent, Google Cloud, v.v.
+- Chatbot: Tích hợp AI Chat Assistant, hỗ trợ hỏi đáp về du lịch, công nghệ, và các chủ đề liên quan.
+(Có thể mở demo trực tiếp từng trang, nhấn mạnh giao diện đẹp, dễ dùng, và các tính năng nổi bật.)
+
+5. Tính năng nổi bật (2 phút)
+- Chatbot AI: Sử dụng mô hình Gemini AI, hỗ trợ hỏi đáp tự nhiên, gợi ý du lịch, lập kế hoạch, v.v.
+- Bảo mật truy cập Chatbot: Mỗi IP phải nhập đúng email CLB mới vào được chatbot, tránh spam và tăng tính riêng tư.
+- Navigation hiện đại: Navbar rõ ràng, responsive, dễ điều hướng.
+- Tài liệu & tham khảo: Phân biệt rõ giữa tài liệu dự án (hướng dẫn sử dụng, kiến trúc) và tài liệu tham khảo (lý thuyết, link ngoài).
+- Triển khai cloud: Deploy trên Google Cloud Platform, đảm bảo uptime, bảo mật, và khả năng mở rộng.
+
+6. Quy trình phát triển & công nghệ sử dụng (2 phút)
+- Flask: Xử lý backend, routing, session, bảo mật.
+- Jinja2/Bootstrap: Tạo giao diện đẹp, responsive.
+- Google Cloud Platform: Deploy, quản lý tài nguyên, bảo mật.
+- Quy trình phát triển: Lắng nghe phản hồi, cải tiến UI/UX, bổ sung tính năng theo nhu cầu thực tế của CLB.
+
+7. Bài học & giá trị mang lại (2 phút)
+- Kỹ năng kỹ thuật: Hiểu sâu hơn về Flask, cloud, bảo mật web, tích hợp AI.
+- Kỹ năng teamwork: Làm việc với mentor, nhận feedback, cải tiến liên tục.
+- Giá trị cho CLB: Tạo nền tảng số hóa, hỗ trợ thành viên, tăng tính chuyên nghiệp cho hoạt động CLB.
+
+8. Định hướng phát triển tương lai (1 phút)
+- Mở rộng chatbot hỗ trợ nhiều chủ đề hơn (học tập, sự kiện, tuyển dụng).
+- Tích hợp thêm các API (Google Maps, Calendar, v.v.).
+- Cho phép thành viên đăng nhập, lưu lịch sử chat, cá nhân hóa trải nghiệm.
+- Tối ưu UI/UX, bổ sung dark mode, đa ngôn ngữ.
+
+9. Kết luận & Q&A (1 phút)
+Trên đây là phần trình bày về dự án website Chatbot & Documentation cho CLB Google Developer Groups On Campus FPT University - HCMC.
+Cảm ơn mọi người đã lắng nghe. Mình sẵn sàng trả lời mọi câu hỏi! 

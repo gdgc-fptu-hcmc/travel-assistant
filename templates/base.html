@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GDGoC FPT University Campus HCM{% endblock %}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/favicon/site.webmanifest') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <style>
+        .nav-link {
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 6px;
+        }
+        .nav-link:hover {
+            color: #007bff;
+        }
+        .nav-link.active {
+            color: #007bff;
+        }
+        .nav-link .nav-icon i {
+            color: inherit;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link.active .nav-icon i {
+            color: #007bff;
+        }
+        .nav-link.active .nav-text {
+            color: #007bff;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 2.5px;
+            background: #007bff;
+            border-radius: 2px;
+            transform: scaleX(1);
+            transition: transform 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 2.5px;
+            background: #007bff;
+            border-radius: 2px;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+        .logo-live-demo-app {
+            padding: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo-live-demo-app img {
+            transition: transform 0.3s ease;
+        }
+        .logo-live-demo-app img:hover {
+            transform: scale(1.05);
+        }
+        .navbar {
+            background: linear-gradient(to right, #ffffff, #f8f9fa) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-nav {
+            gap: 1.2rem;
+        }
+        .nav-item {
+            position: relative;
+        }
+        .nav-item .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-item .nav-link i {
+            font-size: 1.15rem;
+            transition: transform 0.3s, color 0.3s;
+        }
+        .nav-item .nav-link:hover i {
+            transform: scale(1.1);
+            color: #007bff;
+        }
+        .nav-item .nav-link.active i {
+            color: #007bff;
+        }
+        @media (max-width: 768px) {
+            .navbar-nav {
+                gap: 0;
+            }
+            .nav-item {
+                margin: 0.5rem 0;
+            }
+            .nav-link {
+                padding: 0.5rem 0.7rem;
+                font-size: 0.98rem;
+            }
+        }
+
+        /* Page Navigation Styles */
+        .page-navigation {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .page-nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: #fff;
+            border: 2px solid #007bff;
+            border-radius: 50px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .page-nav-button:hover {
+            background: #007bff;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .page-nav-button i {
+            font-size: 1.1rem;
+        }
+
+        .page-nav-button.prev {
+            padding-left: 1rem;
+        }
+
+        .page-nav-button.next {
+            padding-right: 1rem;
+        }
+
+        .page-nav-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .page-navigation {
+                bottom: 70px;
+                right: 10px;
+            }
+            .page-nav-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Modern Simple Navigation Bar Styles */
+        .simple-navbar {
+            background: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            margin: 1.5rem auto 2rem auto;
+            max-width: 700px;
+            padding: 0.5rem 0.5rem;
+        }
+        .simple-navbar-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2.2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .simple-nav-link {
+            color: #333;
+            text-decoration: none;
+            font-size: 1.08rem;
+            font-weight: 500;
+            padding: 0.4rem 1.1rem;
+            border-radius: 1.2rem;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .simple-nav-link:hover {
+            background: #f0f4ff;
+            color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+        }
+        .simple-nav-link.active {
+            background: #007bff;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0,123,255,0.13);
+        }
+        @media (max-width: 600px) {
+            .simple-navbar {
+                max-width: 98vw;
+                border-radius: 0.7rem;
+                margin: 1rem 0 1.2rem 0;
+                padding: 0.3rem 0.1rem;
+            }
+            .simple-navbar-list {
+                gap: 0.5rem;
+            }
+            .simple-nav-link {
+                font-size: 0.97rem;
+                padding: 0.3rem 0.7rem;
+                border-radius: 0.7rem;
+            }
+        }
+
+        /* Clean Minimal Navigation Bar: Visible on all pages except Home */
+        .clean-navbar {
+            background: #fff;
+            border-radius: 0.7rem;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            margin: 1.2rem auto 1.5rem auto;
+            max-width: 600px;
+            padding: 0.2rem 0.2rem;
+        }
+        .clean-navbar-list {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.1rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .clean-nav-link {
+            color: #444;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.28rem 0.7rem;
+            border-radius: 0.5rem;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+            position: relative;
+            letter-spacing: 0.01em;
+        }
+        .clean-nav-link:hover {
+            background: #f3f6fa;
+            color: #1976d2;
+        }
+        .clean-nav-link.active {
+            background: #e3f0fd;
+            color: #1976d2;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .clean-navbar {
+                max-width: 98vw;
+                border-radius: 0.4rem;
+                margin: 0.7rem 0 1rem 0;
+                padding: 0.1rem 0.05rem;
+            }
+            .clean-navbar-list {
+                gap: 0.2rem;
+            }
+            .clean-nav-link {
+                font-size: 0.93rem;
+                padding: 0.18rem 0.4rem;
+                border-radius: 0.3rem;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="overflow-x-hidden">
+    <!-- Header with Logo -->
+    <div class="logo-live-demo-app flex justify-center items-center mt-3">
+        <img class="w-[35px] md:w-[70px]" src="{{ url_for('static', filename='assets/images/logo-gdg.png') }}" alt="GDGoC Logo">
+        <div class="relative">
+            <p class="text-sm font-bold high-weight-color ml-3 md:text-xl">
+                GDGoC FPT University Campus HCM<br>
+            </p>
+            <p class="w-full font-italic text-xs med-weight-color absolute text-right md:text-base">
+                - Building with AI
+            </p>
+        </div>
+    </div>
+
+    <!-- Clean Minimal Navigation Bar: Visible on all pages except Home -->
+    {% if request.endpoint != 'home' %}
+    <nav class="clean-navbar">
+        <ul class="clean-navbar-list">
+            <li><a class="clean-nav-link {% if request.endpoint == 'home' %}active{% endif %}" href="{{ url_for('home') }}">Home</a></li>
+            <li><a class="clean-nav-link {% if request.endpoint == 'author' %}active{% endif %}" href="{{ url_for('author') }}">Author</a></li>
+            <li><a class="clean-nav-link {% if request.endpoint == 'project_idea' %}active{% endif %}" href="{{ url_for('project_idea') }}">Project Idea</a></li>
+            <li><a class="clean-nav-link {% if request.endpoint == 'project_docs' %}active{% endif %}" href="{{ url_for('project_docs') }}">Project Docs</a></li>
+            <li><a class="clean-nav-link {% if request.endpoint == 'chatbot' %}active{% endif %}" href="{{ url_for('chatbot') }}">Chat Assistant</a></li>
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Page Navigation -->
+    <div class="page-navigation">
+        {% if request.endpoint == 'home' %}
+            <a href="{{ url_for('author') }}" class="page-nav-button next">
+                <span>Author</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        {% elif request.endpoint == 'author' %}
+            <a href="{{ url_for('home') }}" class="page-nav-button prev">
+                <i class="fas fa-arrow-left"></i>
+                <span>Home</span>
+            </a>
+            <a href="{{ url_for('project_docs') }}" class="page-nav-button next">
+                <span>Project Docs</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        {% elif request.endpoint == 'project_docs' %}
+            <a href="{{ url_for('author') }}" class="page-nav-button prev">
+                <i class="fas fa-arrow-left"></i>
+                <span>Author</span>
+            </a>
+            <a href="{{ url_for('chatbot') }}" class="page-nav-button next">
+                <span>Chat Assistant</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        {% elif request.endpoint == 'chatbot' %}
+            <a href="{{ url_for('project_docs') }}" class="page-nav-button prev">
+                <i class="fas fa-arrow-left"></i>
+                <span>Project Docs</span>
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <div class="fixed px-2 bottom-0 md:static end-logo flex-row w-full flex justify-between md:justify-center items-center bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.2)]">
+        <img class="w-[200px] md:w-[270px]" src="{{ url_for('static', filename='assets/images/logo-gdgoc-withname.png') }}" alt="GDGoC Full Logo">
+        <p class="md:absolute right-10 font-italic med-weight-color text-xs md:text-sm">
+            by mndkhanh.
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Assistant - GDGoC FPT University Campus HCM{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .chat-header {
+        background: #007bff;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 60vh;
+    }
+    
+    .message {
+        max-width: 80%;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        position: relative;
+        line-height: 1.5;
+    }
+    
+    .user-message {
+        background: #007bff;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .assistant-message {
+        background: #f8f9fa;
+        color: #212529;
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .chat-input {
+        padding: 15px;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        outline: none;
+    }
+    
+    .chat-input button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .chat-input button:hover {
+        background: #0056b3;
+    }
+    
+    .typing-indicator {
+        display: none;
+        align-self: flex-start;
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .typing-indicator span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #6c757d;
+        border-radius: 50%;
+        margin: 0 2px;
+        animation: typing 1s infinite;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .error-message {
+        color: #dc3545;
+        text-align: center;
+        padding: 10px;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <h3><i class="fas fa-robot"></i> AI Travel Assistant</h3>
+    </div>
+    <div class="alert alert-info text-center" style="margin: 10px 20px;">
+        If you have questions after today, you can send them to our club email:
+        <strong>{{ contact_email or 'gdsc.fpt.hcm23@gmail.com' }}</strong>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="message assistant-message">
+            👋 Hello! How can I assist you with your travel plans today?
+            <ul>
+                <li>🗺️ <strong>Destination Ideas:</strong> Looking for inspiration for your next trip?</li>
+                <li>✈️ <strong>Booking Help:</strong> Need tips on finding flights or accommodation?</li>
+                <li>🎒 <strong>Packing & Itinerary:</strong> Want advice on what to pack or how to plan your days?</li>
+                <li>💡 <strong>General Travel Tips:</strong> Seeking any other travel-related advice?</li>
+            </ul>
+            Let me know what's on your mind! 😊
+        </div>
+    </div>
+    
+    <div class="typing-indicator" id="typingIndicator">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <div class="error-message" id="errorMessage"></div>
+    
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+        <button onclick="sendMessage()">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const errorMessage = document.getElementById('errorMessage');
+    let currentResponse = null;
+
+    userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, 'user');
+        userInput.value = '';
+
+        typingIndicator.style.display = 'block';
+        errorMessage.style.display = 'none';
+
+        const maxRetries = 3;
+        let retryCount = 0;
+        let success = false;
+
+        while (retryCount < maxRetries && !success) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentResponse = data;
+                
+                typingIndicator.style.display = 'none';
+                addMessage(data.response, 'assistant');
+                success = true;
+                
+            } catch (error) {
+                retryCount++;
+                console.error(`Attempt ${retryCount} failed:`, error);
+                
+                if (retryCount === maxRetries) {
+                    typingIndicator.style.display = 'none';
+                    errorMessage.textContent = `Failed to get response after ${maxRetries} attempts. Please try again.`;
+                    errorMessage.style.display = 'block';
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+                }
+            }
+        }
+    }
+
+    function addMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        if (sender === 'assistant') {
+            messageDiv.innerHTML = marked.parse(message);
+        } else {
+            messageDiv.textContent = message;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    window.addEventListener('online', () => {
+        errorMessage.textContent = 'Connection restored. You can continue chatting.';
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 3000);
+    });
+
+    window.addEventListener('offline', () => {
+        errorMessage.textContent = 'You are offline. Please check your internet connection.';
+        errorMessage.style.display = 'block';
+    });
+</script>
+{% endblock %} 

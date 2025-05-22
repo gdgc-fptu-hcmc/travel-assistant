@@ -1,0 +1,178 @@
+/* Architecture Diagram Styles */
+.architecture-diagram {
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.diagram-container {
+    position: relative;
+    min-height: 400px;
+    padding: 1rem;
+}
+
+/* System Components */
+.system-component {
+    position: absolute;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.system-component:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.frontend {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.backend {
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background: #f3e5f5;
+    border: 2px solid #9c27b0;
+}
+
+.ai-agents {
+    top: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background: #e8f5e9;
+    border: 2px solid #4caf50;
+}
+
+.database {
+    top: 320px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background: #fff3e0;
+    border: 2px solid #ff9800;
+}
+
+/* Connection Lines */
+.connection-line {
+    position: absolute;
+    background: #666;
+    z-index: -1;
+}
+
+.connection-line::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #666;
+    border-radius: 50%;
+}
+
+/* Component Headers */
+.component-header {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.component-content {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Agent Diagram Styles */
+.agent-diagram {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.agent-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.agent-box {
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.gemini-agent {
+    background: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.search-agent {
+    background: #f3e5f5;
+    border: 2px solid #9c27b0;
+}
+
+.agent-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.agent-icon {
+    font-size: 1.5rem;
+}
+
+.agent-title {
+    font-weight: bold;
+    color: #333;
+}
+
+.agent-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.agent-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.agent-feature i {
+    color: #4caf50;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .system-component {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin-bottom: 1rem;
+    }
+    
+    .connection-line {
+        display: none;
+    }
+} 

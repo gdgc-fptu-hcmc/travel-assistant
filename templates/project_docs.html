@@ -1,0 +1,732 @@
+{% extends "base.html" %}
+
+{% block title %}Project Documentation - GDGoC FPT University Campus HCM{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/architecture.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Documentation</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#overview" class="list-group-item list-group-item-action">
+                        <i class="fas fa-info-circle me-2"></i>Overview
+                    </a>
+                    <a href="#features" class="list-group-item list-group-item-action">
+                        <i class="fas fa-star me-2"></i>Features
+                    </a>
+                    <a href="#architecture" class="list-group-item list-group-item-action">
+                        <i class="fas fa-sitemap me-2"></i>Architecture
+                    </a>
+                    <a href="#agents" class="list-group-item list-group-item-action">
+                        <i class="fas fa-robot me-2"></i>AI Agents
+                    </a>
+                    <a href="#api" class="list-group-item list-group-item-action">
+                        <i class="fas fa-code me-2"></i>API Documentation
+                    </a>
+                    <a href="#setup" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cogs me-2"></i>Setup Guide
+                    </a>
+                    <a href="#future" class="list-group-item list-group-item-action">
+                        <i class="fas fa-rocket me-2"></i>Future Plans
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Overview Section -->
+                    <section id="overview" class="mb-5">
+                        <h2 class="mb-4">Overview</h2>
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <p class="lead">
+                                    This project is a comprehensive travel assistance platform built by GDGoC FPT University Campus HCM.
+                                    It combines modern web technologies with advanced AI capabilities to provide an enhanced travel planning experience.
+                                </p>
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-bullseye text-primary"></i> Project Goals</h5>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Simplify travel planning</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Provide personalized recommendations</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Enhance user experience with AI</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-users text-primary"></i> Target Users</h5>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-user text-info me-2"></i>Travel enthusiasts</li>
+                                            <li><i class="fas fa-user text-info me-2"></i>Business travelers</li>
+                                            <li><i class="fas fa-user text-info me-2"></i>Tourism professionals</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Features Section -->
+                    <section id="features" class="mb-5">
+                        <h2 class="mb-4">Features</h2>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-robot text-primary"></i> AI Chat Assistant
+                                        </h5>
+                                        <p class="card-text">
+                                            Intelligent chatbot powered by Google's Gemini AI model to provide:
+                                        </p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Personalized travel recommendations</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Real-time flight and hotel information</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Local insights and cultural tips</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Itinerary planning assistance</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-map-marked-alt text-success"></i> Destination Planning
+                                        </h5>
+                                        <p class="card-text">
+                                            Comprehensive tools for planning your journey:
+                                        </p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Interactive maps and routes</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Weather forecasts and alerts</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Local event calendars</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Budget planning tools</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Architecture Section -->
+                    <section id="architecture" class="mb-5">
+                        <h2 class="mb-4">Architecture</h2>
+                        
+                        <!-- Agent System Architecture -->
+                        <div class="architecture-diagram mb-5">
+                            <h3 class="h4 mb-4">Agent System Architecture</h3>
+                            <div class="agent-flow">
+                                <!-- Base Agent -->
+                                <div class="agent-node base-agent">
+                                    <div class="agent-icon">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                    <div class="agent-content">
+                                        <h4>Base Agent</h4>
+                                        <ul>
+                                            <li>Model Management (Gemini/Claude/GPT-4)</li>
+                                            <li>Context Handling</li>
+                                            <li>Response Generation</li>
+                                            <li>History Management</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Agent Manager -->
+                                <div class="agent-node manager">
+                                    <div class="agent-icon">
+                                        <i class="fas fa-sitemap"></i>
+                                    </div>
+                                    <div class="agent-content">
+                                        <h4>Agent Manager</h4>
+                                        <ul>
+                                            <li>Message Routing</li>
+                                            <li>Context Building</li>
+                                            <li>Entity Extraction</li>
+                                            <li>Session Management</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Specialized Agents -->
+                                <div class="agent-flow-specialized">
+                                    <div class="agent-node specialized">
+                                        <div class="agent-icon">
+                                            <i class="fas fa-comments"></i>
+                                        </div>
+                                        <div class="agent-content">
+                                            <h4>Conversation Agent</h4>
+                                            <ul>
+                                                <li>Natural Language Understanding</li>
+                                                <li>Intent Classification</li>
+                                                <li>Response Generation</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="agent-node specialized">
+                                        <div class="agent-icon">
+                                            <i class="fas fa-plane"></i>
+                                        </div>
+                                        <div class="agent-content">
+                                            <h4>Travel Agent</h4>
+                                            <ul>
+                                                <li>Destination Planning</li>
+                                                <li>Itinerary Generation</li>
+                                                <li>Travel Recommendations</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="agent-node specialized">
+                                        <div class="agent-icon">
+                                            <i class="fas fa-cloud-sun"></i>
+                                        </div>
+                                        <div class="agent-content">
+                                            <h4>Weather Agent</h4>
+                                            <ul>
+                                                <li>Weather Forecasting</li>
+                                                <li>Climate Analysis</li>
+                                                <li>Travel Weather Advice</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="agent-node specialized">
+                                        <div class="agent-icon">
+                                            <i class="fas fa-utensils"></i>
+                                        </div>
+                                        <div class="agent-content">
+                                            <h4>Food Agent</h4>
+                                            <ul>
+                                                <li>Restaurant Recommendations</li>
+                                                <li>Cuisine Information</li>
+                                                <li>Food Preferences</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Flow Diagram -->
+                        <div class="data-flow-diagram">
+                            <h3 class="h4 mb-4">Data Flow</h3>
+                            <div class="flow-container">
+                                <!-- User Input Stage -->
+                                <div class="flow-stage">
+                                    <div class="stage-header">
+                                        <div class="stage-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <h5>User Input</h5>
+                                    </div>
+                                    <div class="stage-content">
+                                        <ul class="stage-details">
+                                            <li><i class="fas fa-comment"></i> Natural Language Queries</li>
+                                            <li><i class="fas fa-map-marker-alt"></i> Location Preferences</li>
+                                            <li><i class="fas fa-calendar"></i> Date & Time</li>
+                                            <li><i class="fas fa-tags"></i> Travel Preferences</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span class="arrow-label">Request</span>
+                                </div>
+
+                                <!-- Preprocessing Stage -->
+                                <div class="flow-stage">
+                                    <div class="stage-header">
+                                        <div class="stage-icon">
+                                            <i class="fas fa-cogs"></i>
+                                        </div>
+                                        <h5>Preprocessing</h5>
+                                    </div>
+                                    <div class="stage-content">
+                                        <ul class="stage-details">
+                                            <li><i class="fas fa-language"></i> Language Detection</li>
+                                            <li><i class="fas fa-filter"></i> Input Validation</li>
+                                            <li><i class="fas fa-tag"></i> Entity Extraction</li>
+                                            <li><i class="fas fa-history"></i> Context Loading</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span class="arrow-label">Process</span>
+                                </div>
+
+                                <!-- Agent Manager Stage -->
+                                <div class="flow-stage">
+                                    <div class="stage-header">
+                                        <div class="stage-icon">
+                                            <i class="fas fa-sitemap"></i>
+                                        </div>
+                                        <h5>Agent Manager</h5>
+                                    </div>
+                                    <div class="stage-content">
+                                        <ul class="stage-details">
+                                            <li><i class="fas fa-route"></i> Intent Classification</li>
+                                            <li><i class="fas fa-random"></i> Agent Selection</li>
+                                            <li><i class="fas fa-exchange-alt"></i> Context Building</li>
+                                            <li><i class="fas fa-tasks"></i> Task Distribution</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span class="arrow-label">Route</span>
+                                </div>
+
+                                <!-- Agent Processing Stage -->
+                                <div class="flow-stage">
+                                    <div class="stage-header">
+                                        <div class="stage-icon">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <h5>Agent Processing</h5>
+                                    </div>
+                                    <div class="stage-content">
+                                        <ul class="stage-details">
+                                            <li><i class="fas fa-brain"></i> Model Inference</li>
+                                            <li><i class="fas fa-database"></i> Data Retrieval</li>
+                                            <li><i class="fas fa-sync"></i> Context Integration</li>
+                                            <li><i class="fas fa-check-circle"></i> Response Validation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="flow-arrow">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span class="arrow-label">Generate</span>
+                                </div>
+
+                                <!-- Response Generation Stage -->
+                                <div class="flow-stage">
+                                    <div class="stage-header">
+                                        <div class="stage-icon">
+                                            <i class="fas fa-comment-dots"></i>
+                                        </div>
+                                        <h5>Response Generation</h5>
+                                    </div>
+                                    <div class="stage-content">
+                                        <ul class="stage-details">
+                                            <li><i class="fas fa-magic"></i> Response Formatting</li>
+                                            <li><i class="fas fa-link"></i> Resource Linking</li>
+                                            <li><i class="fas fa-history"></i> History Update</li>
+                                            <li><i class="fas fa-check-double"></i> Quality Check</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- AI Agents Section -->
+                    <section id="agents" class="mb-5">
+                        <h2 class="mb-4">AI Agents</h2>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="agent-diagram">
+                                    <div class="agent-box gemini-agent">
+                                        <div class="agent-header">
+                                            <i class="fas fa-brain agent-icon"></i>
+                                            <h5 class="agent-title mb-0">Gemini Agent</h5>
+                                        </div>
+                                        <p class="mb-3">
+                                            Powered by Google's Gemini AI model for natural language understanding and generation.
+                                        </p>
+                                        <ul class="agent-features">
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Context-aware responses
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Multi-turn conversations
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Travel domain expertise
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Natural language processing
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="agent-diagram">
+                                    <div class="agent-box search-agent">
+                                        <div class="agent-header">
+                                            <i class="fas fa-search agent-icon"></i>
+                                            <h5 class="agent-title mb-0">Search Agent</h5>
+                                        </div>
+                                        <p class="mb-3">
+                                            Specialized agent for real-time travel information and search capabilities.
+                                        </p>
+                                        <ul class="agent-features">
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Flight search integration
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Hotel availability
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Local event search
+                                            </li>
+                                            <li class="agent-feature">
+                                                <i class="fas fa-check-circle"></i>
+                                                Weather information
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- API Documentation Section -->
+                    <section id="api" class="mb-5">
+                        <h2 class="mb-4">API Documentation</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Chat API</h5>
+                                <div class="mb-4">
+                                    <h6>Endpoint</h6>
+                                    <pre class="bg-light p-3 rounded"><code>POST /api/chat</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>Request Format</h6>
+                                    <pre class="bg-light p-3 rounded"><code>{
+    "message": "string",
+    "session_id": "string (optional)"
+}</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>Response Format</h6>
+                                    <pre class="bg-light p-3 rounded"><code>{
+    "response": "string",
+    "agent": "string",
+    "status": "success|error"
+}</code></pre>
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    All API requests require proper authentication and rate limiting is applied.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Setup Guide Section -->
+                    <section id="setup" class="mb-5">
+                        <h2 class="mb-4">Setup Guide</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Installation Steps</h5>
+                                <div class="mb-4">
+                                    <h6>1. Clone the Repository</h6>
+                                    <pre class="bg-light p-3 rounded"><code>git clone https://github.com/gdgc-fptu-hcmc/travel-assistant.git
+cd travel-assistant</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>2. Set Up Virtual Environment</h6>
+                                    <pre class="bg-light p-3 rounded"><code>python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>3. Install Dependencies</h6>
+                                    <pre class="bg-light p-3 rounded"><code>pip install -r requirements.txt</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>4. Configure Environment Variables</h6>
+                                    <pre class="bg-light p-3 rounded"><code>cp .env.example .env
+# Edit .env with your API keys and settings</code></pre>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>5. Run the Application</h6>
+                                    <pre class="bg-light p-3 rounded"><code>python app.py</code></pre>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Make sure to set up all required API keys in the .env file before running the application.
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Future Plans Section -->
+                    <section id="future" class="mb-5">
+                        <h2 class="mb-4">Future Plans</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-rocket text-primary"></i> Upcoming Features</h5>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-plus-circle text-success me-2"></i>Mobile application</li>
+                                            <li><i class="fas fa-plus-circle text-success me-2"></i>Voice interface</li>
+                                            <li><i class="fas fa-plus-circle text-success me-2"></i>Multi-language support</li>
+                                            <li><i class="fas fa-plus-circle text-success me-2"></i>Offline mode</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-chart-line text-primary"></i> Roadmap</h5>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-calendar-alt text-info me-2"></i>Q3 2024: Mobile App Beta</li>
+                                            <li><i class="fas fa-calendar-alt text-info me-2"></i>Q4 2024: Voice Interface</li>
+                                            <li><i class="fas fa-calendar-alt text-info me-2"></i>Q1 2025: Multi-language</li>
+                                            <li><i class="fas fa-calendar-alt text-info me-2"></i>Q2 2025: Offline Support</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Architecture Diagram Styles */
+    .architecture-diagram {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .agent-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        position: relative;
+    }
+
+    .agent-node {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: flex;
+        gap: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .agent-node:hover {
+        transform: translateY(-5px);
+    }
+
+    .agent-icon {
+        width: 60px;
+        height: 60px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .agent-content {
+        flex: 1;
+    }
+
+    .agent-content h4 {
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+
+    .agent-content ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .agent-content li {
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    .agent-flow-specialized {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    /* Data Flow Diagram Styles */
+    .data-flow-diagram {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+
+    .flow-container {
+        display: flex;
+        align-items: stretch;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #007bff #f8f9fa;
+    }
+
+    .flow-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .flow-container::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 3px;
+    }
+
+    .flow-container::-webkit-scrollbar-thumb {
+        background: #007bff;
+        border-radius: 3px;
+    }
+
+    .flow-stage {
+        flex: 0 0 220px;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .flow-stage:hover {
+        transform: translateY(-5px);
+    }
+
+    .stage-header {
+        background: #007bff;
+        color: white;
+        padding: 0.75rem;
+        border-radius: 1rem 1rem 0 0;
+        text-align: center;
+    }
+
+    .stage-icon {
+        width: 40px;
+        height: 40px;
+        background: white;
+        color: #007bff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.5rem;
+        font-size: 1rem;
+    }
+
+    .stage-header h5 {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .stage-content {
+        padding: 0.75rem;
+    }
+
+    .stage-details {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .stage-details li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .stage-details li i {
+        color: #007bff;
+        width: 16px;
+        font-size: 0.9rem;
+    }
+
+    .flow-arrow {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+        font-size: 1.25rem;
+        min-width: 40px;
+        flex-shrink: 0;
+    }
+
+    .arrow-label {
+        font-size: 0.7rem;
+        margin-top: 0.25rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1200px) {
+        .flow-container {
+            padding: 0.5rem;
+        }
+
+        .flow-stage {
+            flex: 0 0 200px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .data-flow-diagram {
+            padding: 1rem;
+        }
+
+        .flow-container {
+            flex-direction: column;
+            overflow-x: visible;
+        }
+
+        .flow-stage {
+            flex: 1 1 100%;
+            margin-bottom: 1rem;
+        }
+
+        .flow-arrow {
+            transform: rotate(90deg);
+            margin: 0.5rem 0;
+        }
+    }
+</style>
+{% endblock %} 

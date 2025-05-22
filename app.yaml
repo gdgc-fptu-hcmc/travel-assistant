@@ -1,0 +1,13 @@
+runtime: python39
+
+entrypoint: gunicorn -b :$PORT app:app
+
+instance_class: F1
+automatic_scaling:
+  target_cpu_utilization: 0.65
+  min_instances: 1
+  max_instances: 2
+
+env_variables:
+  SECRET_KEY: "a866a2f2dc79655511e4a2e81ecac3ad837877d8807635e774606ff02e02b29e"
+  GEMINI_API_KEY: "AIzaSyA52W-_mictPMls_n8jX8SRaPIF3-ci1_E"
