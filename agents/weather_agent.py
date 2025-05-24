@@ -3,6 +3,12 @@ import os
 import google.generativeai as genai
 import time
 import re
+import logging
+from dotenv import load_dotenv
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class WeatherAgent(BaseAgent):
     def __init__(self):
@@ -43,48 +49,68 @@ Use emojis to make responses more engaging and informative.
             print(f"Error initializing Gemini: {str(e)}")
             self.model = None
 
-    def process(self, user_input: str) -> dict:
-        """Process weather-related queries."""
-        max_retries = 3
-        base_delay = 2  # Start with 2 seconds delay
-        
-        for attempt in range(max_retries):
-            try:
-                # Generate response using Gemini
-                response = self.model.generate_content(
-                    f"{self.system_prompt}\n\nUser: {user_input}"
-                )
-                
-                return {
-                    "status": "success",
-                    "message": response.text
-                }
-                
-            except Exception as e:
-                error_str = str(e)
-                if "429" in error_str and "quota" in error_str.lower():
-                    # Extract retry delay from error message if available
-                    retry_match = re.search(r'retry_delay\s*{\s*seconds:\s*(\d+)', error_str)
-                    if retry_match:
-                        delay = int(retry_match.group(1))
-                    else:
-                        delay = base_delay * (2 ** attempt)  # Exponential backoff
-                    
-                    print(f"Quota exceeded, retrying in {delay} seconds...")
-                    time.sleep(delay)
-                    continue
-                    
-                print(f"Error: {str(e)}")
-                if attempt == max_retries - 1:
-                    return {
-                        "status": "error",
-                        "message": f"An error occurred after {max_retries} attempts: {str(e)}"
-                    }
-                    
-        return {
-            "status": "error",
-            "message": "Failed to generate response after all retries"
-        }
+    def process(self, input_data, conversation_history=None):
+        """
+        Process weather-related queries and provide weather information
+        """
+        try:
+            logger.info(f"WeatherAgent processing input: {input_data}")
+            
+            # Extract location and time period from input
+            location = self._extract_location(input_data)
+            time_period = self._extract_time_period(input_data)
+            
+            # Generate response
+            response = self._generate_response(location, time_period)
+            
+            return {
+                "agent": self.name,
+                "status": "success",
+                "content": response
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in WeatherAgent: {str(e)}")
+            return {
+                "agent": self.name,
+                "status": "error",
+                "message": f"Error processing weather request: {str(e)}"
+            }
+    
+    def _extract_location(self, text):
+        """Extract location from input text"""
+        # TODO: Implement location extraction logic
+        return "Hồ Chí Minh"  # Default for now
+    
+    def _extract_time_period(self, text):
+        """Extract time period from input text"""
+        # TODO: Implement time period extraction logic
+        return "tuần này"  # Default for now
+    
+    def _generate_response(self, location, time_period):
+        """Generate weather information"""
+        # TODO: Implement weather information logic
+        return f"""Dự báo thời tiết {location} {time_period}:
+
+🌡️ Nhiệt độ:
+- Cao nhất: 32°C
+- Thấp nhất: 25°C
+- Trung bình: 28°C
+
+🌧️ Lượng mưa:
+- Khả năng mưa: 60%
+- Lượng mưa dự kiến: 20-30mm
+
+🌬️ Gió:
+- Tốc độ: 10-15 km/h
+- Hướng: Đông Nam
+
+💡 Lời khuyên:
+- Mang theo ô khi ra ngoài
+- Mặc quần áo thoáng mát
+- Uống đủ nước
+
+Lưu ý: Thông tin thời tiết có thể thay đổi. Bạn nên cập nhật thường xuyên. 😊"""
 
     def process_with_context(self, input_data: dict) -> dict:
         """

@@ -15,11 +15,15 @@ from typing import Dict, Any
 from datetime import datetime
 from .base_agent import BaseAgent
 import logging
+from dotenv import load_dotenv
 
 class HotelAgent(BaseAgent):
     def __init__(self):
         """Initialize the Hotel Agent."""
         super().__init__()
+        
+        load_dotenv()
+        self.api_key = os.getenv('HOTEL_API_KEY')
         
         # Initialize Gemini
         try:
@@ -72,27 +76,32 @@ Example response format:
 ✨ Tiện nghi: [amenities with emoji]
 """
 
-    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process hotel-related queries."""
-        try:
-            logging.info(f"HotelAgent processing input: {input_data}")
-            
-            # Generate response using Gemini
-            prompt = f"{self.system_prompt}\n\nUser: {input_data}"
-            response = self.model.generate_content(prompt)
-            
-            logging.info(f"HotelAgent response: {response.text}")
-            return {
-                "status": "success",
-                "message": response.text
+    def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process hotel-related queries
+        """
+        query = data.get('query', '').lower()
+        
+        # Example response structure
+        response = {
+            'status': 'success',
+            'message': f'Processing hotel query: {query}',
+            'data': {
+                'query': query,
+                'type': 'hotel',
+                'suggestions': []
             }
+        }
+        
+        # Add hotel-specific logic here
+        if 'luxury' in query or '5 star' in query:
+            response['data']['suggestions'].append('Searching for luxury accommodations...')
+        elif 'budget' in query or 'cheap' in query:
+            response['data']['suggestions'].append('Looking for budget-friendly hotels...')
+        elif 'family' in query:
+            response['data']['suggestions'].append('Finding family-friendly hotels...')
             
-        except Exception as e:
-            logging.error(f"HotelAgent error: {str(e)}")
-            return {
-                "status": "error",
-                "message": f"An error occurred: {str(e)}"
-            }
+        return response
     
     def validate_input(self, input_data: Dict[str, Any]) -> bool:
         """Validate the input data."""

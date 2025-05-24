@@ -6,23 +6,21 @@ from .weather_agent import WeatherAgent
 from .food_agent import FoodAgent
 from .flight_agent import FlightAgent
 from .hotel_agent import HotelAgent
+from .place_agent import PlaceAgent
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class AgentManager:
     def __init__(self):
-        """Initialize the Agent Manager with all available agents."""
-        # Configure logging
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
-        self.logger = logging.getLogger('AgentManager')
-        
+        """Initialize the agent manager with all available agents"""
         self.agents = {
-            'travel': TravelAgent(),
-            'weather': WeatherAgent(),
-            'food': FoodAgent(),
             'flight': FlightAgent(),
-            'hotel': HotelAgent()
+            'hotel': HotelAgent(),
+            'place': PlaceAgent(),
+            'food': FoodAgent(),
+            'weather': WeatherAgent()
         }
         
         # Lưu trữ session data
@@ -74,99 +72,56 @@ class AgentManager:
         best_agent = max(scores.items(), key=lambda x: x[1])
         return best_agent[0] if best_agent[1] > 0 else 'travel'
 
-    def process(self, user_input: str, session_id: str = None, conversation_history: List = None) -> dict:
+    def process(self, input_data, conversation_history=None):
         """
-        Process user input by routing it to the appropriate agent.
-        
-        Args:
-            user_input (str): The user's message
-            session_id (str, optional): Session identifier
-            conversation_history (List, optional): Previous conversation history
-            
-        Returns:
-            dict: Response from the selected agent
+        Process input data by routing it to the appropriate agent
         """
         try:
-            # Khởi tạo dữ liệu session nếu chưa có
-            if session_id and session_id not in self.sessions:
-                self.sessions[session_id] = {
-                    'conversation_history': [],
-                    'context': {},
-                    'entities': {}
-                }
+            # Determine which agent to use based on input
+            agent = self._route_to_agent(input_data)
+            logger.info(f"Routing message to {agent.name} agent")
             
-            # Sử dụng lịch sử hội thoại từ tham số hoặc từ session
-            history = conversation_history
-            if not history and session_id and 'conversation_history' in self.sessions[session_id]:
-                history = self.sessions[session_id]['conversation_history']
-            
-            # Tạo context từ lịch sử hội thoại
-            context = self._build_context_from_history(history)
-            
-            # Detect which agent should handle this input
-            agent_name = self._detect_agent(user_input, history)
-            
-            self.logger.info(f"Routing message to {agent_name} agent")
-            
-            # Trích xuất các thông tin quan trọng từ câu hỏi
-            extracted_entities = self._extract_entities(user_input)
-            
-            # Lưu entities vào session
-            if session_id:
-                self.sessions[session_id]['entities'].update(extracted_entities)
-            
-            # Kiểm tra xem có cần thông tin từ agent khác không
-            required_info = self._check_required_info(agent_name, user_input, extracted_entities)
-            
-            # Nếu cần thông tin từ agent khác
-            if required_info and required_info['needed']:
-                supporting_agent_name = required_info['agent']
-                query = required_info['query']
-                
-                self.logger.info(f"Getting additional information from {supporting_agent_name} agent")
-                
-                # Gọi agent hỗ trợ để lấy thông tin
-                supporting_info = self.agents[supporting_agent_name].process(query)
-                
-                # Thêm thông tin hỗ trợ vào context
-                context['supporting_info'] = supporting_info
-            
-            # Chuẩn bị input cho agent chính
-            agent_input = {
-                'user_input': user_input,
-                'context': context,
-                'entities': extracted_entities,
-                'history': history
-            }
-            
-            # Get response from the selected agent with context
-            response = self.agents[agent_name].process_with_context(agent_input)
-            
-            # Add agent info to response
-            response['agent'] = agent_name
-            
-            # Cập nhật lịch sử hội thoại trong session
-            if session_id:
-                # Thêm câu hỏi và trả lời vào lịch sử
-                self.sessions[session_id]['conversation_history'].append({
-                    'role': 'user',
-                    'content': user_input
-                })
-                self.sessions[session_id]['conversation_history'].append({
-                    'role': 'assistant',
-                    'content': response.get('content', ''),
-                    'agent': agent_name
-                })
-            
+            # Process the input with the selected agent
+            response = agent.process(input_data, conversation_history)
             return response
             
         except Exception as e:
-            self.logger.error(f"Error processing message: {str(e)}")
+            logger.error(f"Error in AgentManager: {str(e)}")
             return {
+                "agent": "unknown",
                 "status": "error",
-                "message": f"An error occurred: {str(e)}",
-                "agent": "manager"
+                "message": f"Error processing request: {str(e)}"
             }
+    
+    def _route_to_agent(self, input_data):
+        """
+        Route the input to the appropriate agent based on content
+        """
+        # Convert input to lowercase for easier matching
+        text = input_data.lower()
+        
+        # Check for flight-related keywords
+        if any(keyword in text for keyword in ['chuyến bay', 'vé máy bay', 'bay', 'sân bay']):
+            return self.agents['flight']
+            
+        # Check for hotel-related keywords
+        if any(keyword in text for keyword in ['khách sạn', 'đặt phòng', 'phòng', 'resort']):
+            return self.agents['hotel']
+            
+        # Check for place-related keywords
+        if any(keyword in text for keyword in ['địa điểm', 'du lịch', 'thăm quan', 'thắng cảnh']):
+            return self.agents['place']
+            
+        # Check for food-related keywords
+        if any(keyword in text for keyword in ['nhà hàng', 'quán ăn', 'món ăn', 'đặc sản']):
+            return self.agents['food']
+            
+        # Check for weather-related keywords
+        if any(keyword in text for keyword in ['thời tiết', 'nhiệt độ', 'mưa', 'nắng']):
+            return self.agents['weather']
+            
+        # Default to place agent if no specific match
+        return self.agents['place']
     
     def _extract_entities(self, text: str) -> Dict[str, Any]:
         """Trích xuất các thông tin quan trọng từ câu hỏi"""
@@ -234,7 +189,7 @@ class AgentManager:
             result['query'] = f"Thời tiết ở Đà Nẵng trong tuần này"
             
             # Ghi log về việc cần bổ sung thông tin thời tiết
-            self.logger.info(f"FlightAgent yêu cầu thông tin thời tiết từ WeatherAgent: {result['query']}")
+            logger.info(f"FlightAgent yêu cầu thông tin thời tiết từ WeatherAgent: {result['query']}")
         
         # Nếu là FoodAgent và không có thông tin về địa điểm
         elif agent_name == 'food' and not entities.get('locations'):
@@ -244,6 +199,6 @@ class AgentManager:
         if result['needed'] and result['agent']:
             if result['agent'] in self.agents and hasattr(self.agents[result['agent']], 'uses_external_apis'):
                 if self.agents[result['agent']].uses_external_apis:
-                    self.logger.info(f"Supporting agent {result['agent']} uses external APIs")
+                    logger.info(f"Supporting agent {result['agent']} uses external APIs")
             
         return result 

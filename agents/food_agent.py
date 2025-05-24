@@ -3,6 +3,12 @@ import os
 import google.generativeai as genai
 import time
 import re
+import logging
+from dotenv import load_dotenv
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class FoodAgent(BaseAgent):
     def __init__(self):
@@ -43,48 +49,65 @@ Use emojis to make responses more engaging and appetizing.
             print(f"Error initializing Gemini: {str(e)}")
             self.model = None
 
-    def process(self, user_input: str) -> dict:
-        """Process food-related queries."""
-        max_retries = 3
-        base_delay = 2  # Start with 2 seconds delay
-        
-        for attempt in range(max_retries):
-            try:
-                # Generate response using Gemini
-                response = self.model.generate_content(
-                    f"{self.system_prompt}\n\nUser: {user_input}"
-                )
-                
-                return {
-                    "status": "success",
-                    "message": response.text
-                }
-                
-            except Exception as e:
-                error_str = str(e)
-                if "429" in error_str and "quota" in error_str.lower():
-                    # Extract retry delay from error message if available
-                    retry_match = re.search(r'retry_delay\s*{\s*seconds:\s*(\d+)', error_str)
-                    if retry_match:
-                        delay = int(retry_match.group(1))
-                    else:
-                        delay = base_delay * (2 ** attempt)  # Exponential backoff
-                    
-                    print(f"Quota exceeded, retrying in {delay} seconds...")
-                    time.sleep(delay)
-                    continue
-                    
-                print(f"Error: {str(e)}")
-                if attempt == max_retries - 1:
-                    return {
-                        "status": "error",
-                        "message": f"An error occurred after {max_retries} attempts: {str(e)}"
-                    }
-                    
-        return {
-            "status": "error",
-            "message": "Failed to generate response after all retries"
-        }
+    def process(self, input_data, conversation_history=None):
+        """
+        Process food-related queries and provide restaurant recommendations
+        """
+        try:
+            logger.info(f"FoodAgent processing input: {input_data}")
+            
+            # Extract location and cuisine type from input
+            location = self._extract_location(input_data)
+            cuisine = self._extract_cuisine(input_data)
+            
+            # Generate response
+            response = self._generate_response(location, cuisine)
+            
+            return {
+                "agent": self.name,
+                "status": "success",
+                "content": response
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in FoodAgent: {str(e)}")
+            return {
+                "agent": self.name,
+                "status": "error",
+                "message": f"Error processing food request: {str(e)}"
+            }
+    
+    def _extract_location(self, text):
+        """Extract location from input text"""
+        # TODO: Implement location extraction logic
+        return "Đà Nẵng"  # Default for now
+    
+    def _extract_cuisine(self, text):
+        """Extract cuisine type from input text"""
+        # TODO: Implement cuisine extraction logic
+        return "local"  # Default for now
+    
+    def _generate_response(self, location, cuisine):
+        """Generate restaurant recommendations"""
+        # TODO: Implement restaurant recommendation logic
+        return f"""Chào bạn! Dưới đây là một số nhà hàng ngon ở {location} mà bạn có thể tham khảo:
+
+1. Nhà hàng Hải Sản:
+   - Địa chỉ: 123 Đường Biển
+   - Đặc sản: Hải sản tươi sống
+   - Giá: Trung bình 500k-1tr/người
+
+2. Nhà hàng Đặc Sản:
+   - Địa chỉ: 456 Đường Trung Tâm
+   - Đặc sản: Món ăn địa phương
+   - Giá: Trung bình 300k-500k/người
+
+3. Nhà hàng Quốc Tế:
+   - Địa chỉ: 789 Đường Phố Tây
+   - Đặc sản: Món Âu, Á
+   - Giá: Trung bình 800k-1.5tr/người
+
+Lưu ý: Giá cả có thể thay đổi tùy theo mùa và thời điểm. Bạn nên đặt bàn trước để đảm bảo có chỗ. 😊"""
 
     def process_with_context(self, input_data: dict) -> dict:
         """

@@ -2,6 +2,8 @@
 .env
 *.env
 .env.*
+app.yaml
+app.yaml.backup
 
 # Python
 __pycache__/

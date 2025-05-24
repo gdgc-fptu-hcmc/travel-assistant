@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Assistant - GDG FPT University HCM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <img src="{{ url_for('static', filename='assets/images/logo-gdg.png') }}" alt="GDG Logo" class="logo">
+            <h1>Travel Assistant</h1>
+        </div>
+        <div class="chat-container">
+            <div id="chat-messages"></div>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Ask about travel plans...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 

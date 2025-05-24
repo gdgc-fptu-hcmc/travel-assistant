@@ -14,6 +14,7 @@ import os
 from typing import Dict, Any
 from datetime import datetime
 from .base_agent import BaseAgent
+from dotenv import load_dotenv
 
 class PlaceAgent(BaseAgent):
     def __init__(self):
@@ -49,6 +50,9 @@ class PlaceAgent(BaseAgent):
         except Exception as e:
             print(f"Error initializing Gemini: {str(e)}")
             self.model = None
+        
+        load_dotenv()
+        self.api_key = os.getenv('PLACE_API_KEY')
         
     async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process the input data and return results."""
@@ -251,4 +255,33 @@ class PlaceAgent(BaseAgent):
                 return None
         except Exception as e:
             print(f"Error generating response: {str(e)}")
-            return None 
+            return None
+
+    def process_place(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process place-related queries
+        """
+        query = data.get('query', '').lower()
+        
+        # Example response structure
+        response = {
+            'status': 'success',
+            'message': f'Processing place query: {query}',
+            'data': {
+                'query': query,
+                'type': 'place',
+                'suggestions': []
+            }
+        }
+        
+        # Add place-specific logic here
+        if 'tourist' in query or 'attraction' in query:
+            response['data']['suggestions'].append('Finding popular tourist attractions...')
+        elif 'restaurant' in query or 'food' in query:
+            response['data']['suggestions'].append('Searching for local restaurants...')
+        elif 'shopping' in query or 'mall' in query:
+            response['data']['suggestions'].append('Looking for shopping destinations...')
+        elif 'museum' in query or 'art' in query:
+            response['data']['suggestions'].append('Finding cultural attractions...')
+            
+        return response 

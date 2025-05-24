@@ -1,6 +1,6 @@
 runtime: python39
 
-entrypoint: gunicorn -b :$PORT main:app
+entrypoint: gunicorn -b :$PORT app:app
 
 instance_class: F1
 automatic_scaling:
@@ -13,9 +13,11 @@ automatic_scaling:
   max_pending_latency: automatic
 
 env_variables:
-  SECRET_KEY: "a866a2f2dc79655511e4a2e81ecac3ad837877d8807635e774606ff02e02b29e"
-  GEMINI_API_KEY: "your_gemini_api_key"
-  GOOGLE_MAPS_API_KEY: "your_google_maps_api_key"
+  SECRET_KEY: ${SECRET_KEY}
+  GEMINI_API_KEY: ${GEMINI_API_KEY}
+  GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+  GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+  SERPAPI_API_KEY: ${SERPAPI_API_KEY}
 
 handlers:
 - url: /static

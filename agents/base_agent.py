@@ -7,17 +7,8 @@ import hashlib
 import json
 from functools import lru_cache
 import requests
+from dotenv import load_dotenv
 
-try:
-    from python_dotenv import load_dotenv
-except ImportError:
-    print("Warning: python-dotenv not installed. Please run: pip install python-dotenv")
-    load_dotenv = lambda: None
-
-# Load environment variables
-load_dotenv()
-
-# Try to import required packages
 try:
     import google.generativeai as genai
 except ImportError:
@@ -52,22 +43,34 @@ class BaseAgent:
         }
     }
 
-    def __init__(self, model_type: str = 'gemini'):
-        """Initialize base agent with AI model configuration."""
+    def __init__(self, name: str = "Base Agent", description: str = "Base agent class"):
+        """Initialize the base agent."""
+        self.name = name
+        self.description = description
+        self.conversation_history = []
+        self.uses_external_apis = False
+        
         # Configure logging
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
+        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(self.__class__.__name__)
         
-        # Initialize model
-        self.model_type = model_type
-        self.model = self._initialize_model(model_type)
+        # Load environment variables
+        load_dotenv()
         
-        # Initialize conversation history
-        self.conversation_history = []
+    async def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process the input data. To be implemented by child classes."""
+        raise NotImplementedError("Child classes must implement process()")
         
+    async def process_with_context(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process input with context. To be implemented by child classes."""
+        raise NotImplementedError("Child classes must implement process_with_context()")
+        
+    async def validate_input(self, input_data: Dict[str, Any]) -> bool:
+        """Validate input data. To be implemented by child classes."""
+        raise NotImplementedError("Child classes must implement validate_input()")
+        
+    def _check_serp_api(self) -> bool:
+        """Check if SERP API is available."""
         # Initialize cache
         self._cache = {}
         self._cache_ttl = 3600  # Cache TTL in seconds
