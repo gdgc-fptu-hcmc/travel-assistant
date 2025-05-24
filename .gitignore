@@ -1,5 +1,7 @@
-# Environment variables
+# Environment variables and secrets
 .env
+*.env
+.env.*
 
 # Python
 __pycache__/
@@ -32,6 +34,8 @@ ENV/
 .idea/
 .vscode/
 *.swp
-*.swo .env
-.env
-app.yaml
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -11,17 +11,20 @@ except ImportError:
     GoogleSearch = None
 
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 from .base_agent import BaseAgent
 import logging
 import re
+import google.generativeai as genai
+from dotenv import load_dotenv
 
-try:
-    import google.generativeai as genai
-except ImportError:
-    print("Warning: Google Generative AI not installed. Please run: pip install google-generativeai")
-    genai = None
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
 
 class FlightAgent(BaseAgent):
     def __init__(self):
@@ -31,10 +34,35 @@ class FlightAgent(BaseAgent):
         # Đánh dấu là agent sử dụng API bên ngoài
         self.uses_external_apis = True
         
+        # Initialize Gemini
+        try:
+            api_key = os.getenv('GEMINI_API_KEY')
+            if not api_key:
+                raise ValueError("GEMINI_API_KEY not found in environment variables")
+                
+            genai.configure(api_key=api_key)
+            
+            # List available models
+            models = genai.list_models()
+            available_models = [model.name for model in models]
+            logger.info(f"Available models: {available_models}")
+            
+            # Try to use gemini-2.0-flash model
+            if 'models/gemini-2.0-flash' in available_models:
+                self.model = genai.GenerativeModel('models/gemini-2.0-flash')
+                logger.info("Using model: gemini-2.0-flash")
+            else:
+                raise ValueError(f"Model gemini-2.0-flash not found. Available models: {available_models}")
+            
+        except Exception as e:
+            logger.error(f"Error initializing Gemini: {str(e)}")
+            self.model = None
+            raise  # Re-raise the exception to handle it in the calling code
+
         # Get SERP API key
         self.serp_api_key = os.getenv("SERP_API_KEY")
         if not self.serp_api_key:
-            logging.warning("SERP_API_KEY not found in environment variables. Flight search will use AI-generated data instead of real-time information.")
+            logger.warning("SERP_API_KEY not found in environment variables. Flight search will use AI-generated data instead of real-time information.")
         
         # System prompt for the model
         self.system_prompt = """You are a flight booking expert. Your main task is to provide specific flight information. When users ask about flights, ALWAYS show actual flight details.
@@ -114,185 +142,159 @@ Example responses:
 
 NEVER just list websites. ALWAYS show specific flight information."""
 
-        # Try to get the specific model
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process flight search request."""
         try:
-            self.model = genai.GenerativeModel('gemini-2.0-flash')
-            print("Successfully initialized gemini-2.0-flash")
-        except Exception as model_error:
-            print(f"Error initializing gemini-2.0-flash: {str(model_error)}")
-            # Fallback to gemini-pro
-            print("Falling back to gemini-pro")
-            self.model = genai.GenerativeModel('gemini-pro')
-
-    def process(self, user_input: str) -> Dict[str, Any]:
-        """Process flight-related queries."""
-        try:
-            logging.info(f"FlightAgent processing input: {user_input}")
-            
-            # Check if input contains flight-related keywords
-            flight_keywords = ['chuyến bay', 'vé máy bay', 'bay', 'flight']
-            if not any(keyword in user_input.lower() for keyword in flight_keywords):
+            if not isinstance(input_data, dict):
                 return {
-                    "status": "error",
-                    "message": "Vui lòng cung cấp thông tin về chuyến bay bạn muốn tìm kiếm."
+                    'status': 'error',
+                    'message': 'Input must be a dictionary'
                 }
-                
-            # Use SERP API if available
-            if self.serp_api_key and GoogleSearch is not None:
-                # Try to extract locations and dates from the query
-                from_location = None
-                to_location = None
-                date = None
-                
-                # Basic extraction of from/to locations
-                from_patterns = [
-                    r'từ\s+([A-Za-z\s]+)\s+đến',
-                    r'từ\s+([A-Za-z\s]+)',
-                    r'([A-Za-z\s]+)\s+đến'
-                ]
-                
-                to_patterns = [
-                    r'đến\s+([A-Za-z\s]+)',
-                    r'tới\s+([A-Za-z\s]+)'
-                ]
-                
-                for pattern in from_patterns:
-                    matches = re.search(pattern, user_input, re.IGNORECASE)
-                    if matches:
-                        from_location = matches.group(1).strip()
-                        break
-                        
-                for pattern in to_patterns:
-                    matches = re.search(pattern, user_input, re.IGNORECASE)
-                    if matches:
-                        to_location = matches.group(1).strip()
-                        break
-                
-                # If we have both locations, attempt to use SERP API
-                if from_location and to_location:
-                    logging.info(f"Extracted flight route: {from_location} to {to_location}")
-                    try:
-                        # Use SERP API to get flight info
-                        search_params = {
-                            'engine': 'google_flights',
-                            'departure_id': from_location,
-                            'arrival_id': to_location,
-                            'type': '2',  # one-way flight
-                            'hl': 'vi',
-                            'api_key': self.serp_api_key
-                        }
-                        
-                        search = GoogleSearch(search_params)
-                        results = search.get_dict()
-                        
-                        if results and 'error' not in results:
-                            # Format flight results using the model
-                            results_summary = f"Kết quả tìm kiếm chuyến bay từ {from_location} đến {to_location}:\n\n"
-                            results_summary += str(results)
-                            
-                            # Use AI to format the results nicely
-                            formatted_response = self.model.generate_content(
-                                f"Bạn là chuyên gia về chuyến bay. Hãy định dạng thông tin này thành phản hồi hữu ích bằng tiếng Việt với emoji:\n\n{results_summary}"
-                            )
-                            
-                            return {
-                                "status": "success",
-                                "content": formatted_response.text,
-                                "raw_data": results
-                            }
-                    except Exception as search_error:
-                        logging.error(f"Error using SERP API: {str(search_error)}")
-                        # Fall back to AI-generated response
-            else:
-                # Nếu không có SERP_API_KEY, sử dụng AI để tạo dữ liệu giả lập
-                logging.info("SERP API not available for regular process, using AI-generated flight data instead")
-                
-                # Basic extraction of from/to locations
-                from_location = None
-                to_location = None
-                
-                from_patterns = [
-                    r'từ\s+([A-Za-z\s]+)\s+đến',
-                    r'từ\s+([A-Za-z\s]+)',
-                    r'([A-Za-z\s]+)\s+đến'
-                ]
-                
-                to_patterns = [
-                    r'đến\s+([A-Za-z\s]+)',
-                    r'tới\s+([A-Za-z\s]+)'
-                ]
-                
-                for pattern in from_patterns:
-                    matches = re.search(pattern, user_input, re.IGNORECASE)
-                    if matches:
-                        from_location = matches.group(1).strip()
-                        break
-                        
-                for pattern in to_patterns:
-                    matches = re.search(pattern, user_input, re.IGNORECASE)
-                    if matches:
-                        to_location = matches.group(1).strip()
-                        break
-                
-                # Kiểm tra nếu đã xác định được địa điểm đi và đến
-                if from_location and to_location:
-                    # Chỉnh prompt cho Gemini
-                    enhanced_prompt = f"""Bạn là chuyên gia về chuyến bay. 
 
-Người dùng đang tìm kiếm chuyến bay từ {from_location} đến {to_location}.
+            # Extract required fields
+            from_city = input_data.get('from_city', '')
+            to_city = input_data.get('to_city', '')
+            date = input_data.get('date', '')
 
-Hãy tạo dữ liệu thực tế về các chuyến bay trên tuyến này, bao gồm:
-1. Hãng hàng không (Vietnam Airlines, Vietjet Air, Bamboo Airways)
-2. Số hiệu chuyến bay
-3. Giờ khởi hành và đến
-4. Thời gian bay
-5. Loại máy bay
-6. Giá vé (phạm vi, VND)
-7. Hành lý xách tay và ký gửi
+            if not all([from_city, to_city, date]):
+                return {
+                    'status': 'error',
+                    'message': 'Missing required fields: from_city, to_city, or date'
+                }
 
-Định dạng kết quả rõ ràng với emoji. Liệt kê ít nhất 4-5 lựa chọn khác nhau.
-Thêm các lưu ý hữu ích cho hành khách.
-
-Câu hỏi gốc: {user_input}
-"""
-                    
-                    # Generate response using Gemini with enhanced prompt
-                    response = self.model.generate_content(enhanced_prompt)
-                    
-                    if not response or not hasattr(response, 'text'):
-                        return {
-                            "status": "error",
-                            "message": "Không thể tìm thông tin chuyến bay. Vui lòng thử lại."
-                        }
-                    
-                    return {
-                        "status": "success",
-                        "content": response.text + "\n\n*(Dữ liệu được tạo bởi AI, có thể không phản ánh lịch trình thực tế)*"
-                    }
+            # Create search query
+            query = f"""Tìm thông tin chuyến bay từ {from_city} đến {to_city} vào ngày {date}.
+            Cung cấp thông tin chi tiết về:
+            1. Số hiệu chuyến bay
+            2. Hãng hàng không
+            3. Giờ khởi hành và đến
+            4. Giá vé (VND)
+            5. Thời gian bay
+            6. Loại máy bay
+            7. Hành lý cho phép
             
-            # Generate response using Gemini
-            response = self.model.generate_content(
-                f"{self.system_prompt}\n\nUser: {user_input}"
-            )
+            Định dạng kết quả theo mẫu:
+            ✈️ [Số hiệu chuyến bay] - [Hãng hàng không]
+            🛫 Khởi hành: [Giờ] từ [Sân bay]
+            🛬 Đến: [Giờ] tại [Sân bay]
+            ⏱️ Thời gian bay: [Thời gian]
+            💰 Giá vé: [Giá] VND
+            💺 Loại máy bay: [Loại]
+            🛄 Hành lý: [Thông tin hành lý]
+            """
+            
+            # Get response from Gemini
+            response = self.model.generate_content(query)
             
             if not response or not hasattr(response, 'text'):
                 return {
-                    "status": "error",
-                    "message": "Không thể tìm thông tin chuyến bay. Vui lòng thử lại."
+                    'status': 'error',
+                    'message': 'Failed to generate response'
+                }
+
+            # Parse flight data from response
+            flights = self._parse_flight_data(response.text)
+            
+            if not flights:
+                return {
+                    'status': 'error',
+                    'message': 'No flight information found in the response'
                 }
             
-            logging.info(f"FlightAgent response: {response.text}")
             return {
-                "status": "success",
-                "content": response.text
+                'status': 'success',
+                'data': {
+                    'from_city': from_city,
+                    'to_city': to_city,
+                    'date': date,
+                    'flights': flights
+                }
             }
+
+        except Exception as e:
+            logger.error(f"FlightAgent error: {str(e)}")
+            return {
+                'status': 'error',
+                'message': str(e)
+            }
+
+    def _parse_flight_data(self, text: str) -> list:
+        """Parse flight data from Gemini response."""
+        try:
+            flights = []
+            current_flight = {}
+            
+            # Split text into lines
+            lines = text.split('\n')
+            
+            for line in lines:
+                line = line.strip()
+                
+                # Skip empty lines
+                if not line:
+                    continue
+                    
+                # Check for new flight entry
+                if '✈️' in line:
+                    # Save previous flight if exists
+                    if current_flight:
+                        flights.append(current_flight)
+                    
+                    # Start new flight
+                    current_flight = {
+                        'airline': 'Unknown',
+                        'flight_number': 'Unknown',
+                        'departure_time': 'Unknown',
+                        'arrival_time': 'Unknown',
+                        'price': 'Unknown',
+                        'duration': 'Unknown',
+                        'aircraft': 'Unknown',
+                        'baggage': 'Unknown'
+                    }
+                    
+                    # Extract flight number and airline
+                    parts = line.split(' - ')
+                    if len(parts) >= 2:
+                        flight_info = parts[0].replace('✈️', '').strip()
+                        current_flight['flight_number'] = flight_info
+                        current_flight['airline'] = parts[1].strip()
+                
+                # Parse other flight details
+                elif '🛫' in line:
+                    time_match = re.search(r'(\d{2}:\d{2})', line)
+                    if time_match:
+                        current_flight['departure_time'] = time_match.group(1)
+                
+                elif '🛬' in line:
+                    time_match = re.search(r'(\d{2}:\d{2})', line)
+                    if time_match:
+                        current_flight['arrival_time'] = time_match.group(1)
+                
+                elif '⏱️' in line:
+                    duration = line.replace('⏱️', '').replace('Thời gian bay:', '').strip()
+                    current_flight['duration'] = duration
+                
+                elif '💰' in line:
+                    price = line.replace('💰', '').replace('Giá vé:', '').replace('VND', '').strip()
+                    current_flight['price'] = price
+                
+                elif '💺' in line:
+                    aircraft = line.replace('💺', '').replace('Loại máy bay:', '').strip()
+                    current_flight['aircraft'] = aircraft
+                
+                elif '🛄' in line:
+                    baggage = line.replace('🛄', '').replace('Hành lý:', '').strip()
+                    current_flight['baggage'] = baggage
+            
+            # Add the last flight if exists
+            if current_flight:
+                flights.append(current_flight)
+            
+            return flights
             
         except Exception as e:
-            logging.error(f"FlightAgent error: {str(e)}")
-            return {
-                "status": "error",
-                "message": f"An error occurred: {str(e)}"
-            }
+            logger.error(f"Error parsing flight data: {str(e)}")
+            return []
 
     def process_with_context(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """

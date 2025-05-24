@@ -72,14 +72,15 @@ Example response format:
 ✨ Tiện nghi: [amenities with emoji]
 """
 
-    def process(self, user_input: str) -> Dict[str, Any]:
+    def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process hotel-related queries."""
         try:
-            logging.info(f"HotelAgent processing input: {user_input}")
+            logging.info(f"HotelAgent processing input: {input_data}")
+            
             # Generate response using Gemini
-            response = self.model.generate_content(
-                f"{self.system_prompt}\n\nUser: {user_input}"
-            )
+            prompt = f"{self.system_prompt}\n\nUser: {input_data}"
+            response = self.model.generate_content(prompt)
+            
             logging.info(f"HotelAgent response: {response.text}")
             return {
                 "status": "success",
@@ -93,7 +94,7 @@ Example response format:
                 "message": f"An error occurred: {str(e)}"
             }
     
-    async def validate_input(self, input_data: Dict[str, Any]) -> bool:
+    def validate_input(self, input_data: Dict[str, Any]) -> bool:
         """Validate the input data."""
         if 'type' not in input_data:
             return False
@@ -248,25 +249,57 @@ Example response format:
         """
         
         return self._generate_response(prompt)
-
-    async def _generate_response(self, prompt):
+        
+    def _generate_response(self, prompt: str) -> Dict[str, Any]:
         """Generate a response using Gemini."""
         if not self.model:
-            print("Gemini model not initialized")
-            return None
+            return {
+                "status": "error",
+                "message": "Gemini model not initialized"
+            }
             
         try:
-            print(f"Generating response for prompt: {prompt[:100]}...")
             response = self.model.generate_content(prompt)
             if response and hasattr(response, 'text'):
-                print(f"Generated response: {response.text[:100]}...")
-                return response.text
+                return {
+                    "status": "success",
+                    "content": response.text
+                }
             else:
-                print("No response text found in response object")
-                return None
+                return {
+                    "status": "error",
+                    "message": "No response text found in response object"
+                }
         except Exception as e:
-            print(f"Error generating response: {str(e)}")
-            return None
+            return {
+                "status": "error",
+                "message": str(e)
+            }
+            
+    def _summarize_text(self, text: str) -> str:
+        """Summarize text using Gemini."""
+        prompt = f"""
+        Summarize this text in a concise and engaging way:
+        {text}
+        """
+        
+        response = self._generate_response(prompt)
+        return response["content"] if response["status"] == "success" else "Summary not available"
+        
+    def _analyze_with_context(self, text: str, context: str) -> Dict[str, Any]:
+        """Analyze text with context using Gemini."""
+        prompt = f"""
+        Context: {context}
+        
+        Analyze this text and provide insights:
+        {text}
+        """
+        
+        return self._generate_response(prompt)
+        
+    def _check_serp_api(self) -> bool:
+        """Check if SERP API is available."""
+        return GoogleSearch is not None and hasattr(self, 'serp_api_key') and self.serp_api_key
 
     def process_with_context(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """

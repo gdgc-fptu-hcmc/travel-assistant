@@ -1,44 +1,53 @@
-import asyncio
+import os
+from datetime import datetime
 from agents.flight_agent import FlightAgent
 from agents.hotel_agent import HotelAgent
 from agents.place_agent import PlaceAgent
 import json
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import asyncio
+
+# Load environment variables
+load_dotenv()
 
 def print_json(data):
     """Print JSON data in a formatted way"""
     print(json.dumps(data, indent=2))
 
-async def test_flight_search():
-    """Test flight search functionality"""
+def test_flight_search():
+    """Test flight search functionality."""
     print("\n=== Testing Flight Search ===")
-    agent = FlightAgent()
     
-    # Test flight search with realistic data
-    result = await agent.process({
-        "type": "search_flights",
-        "from_city": "SGN",  # Ho Chi Minh City
-        "to_city": "HAN",    # Hanoi
-        "date": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")  # Next week
-    })
+    # Initialize FlightAgent
+    flight_agent = FlightAgent()
     
-    print("\nFlight Search Results:")
-    print(f"Status: {result.get('status')}")
-    if result.get('status') == 'success':
-        print(f"Found {result.get('count', 0)} flights")
-        if result.get('flights'):
-            print("\nSample Flight Details:")
-            sample_flight = result['flights'][0]
-            print(f"Airline: {sample_flight.get('airline', 'N/A')}")
-            print(f"Departure: {sample_flight.get('departure_time', 'N/A')}")
-            print(f"Arrival: {sample_flight.get('arrival_time', 'N/A')}")
-            print(f"Price: {sample_flight.get('price', 'N/A')}")
-        print("\nAI Insights:")
-        print(result.get('ai_insights'))
-        print("\nSummary:")
-        print(result.get('summary'))
+    # Test data
+    test_input = {
+        'type': 'search_flights',
+        'from_city': 'SGN',
+        'to_city': 'HAN',
+        'date': '2025-05-31'
+    }
+    
+    # Process request
+    response = flight_agent.process(test_input)
+    
+    # Print results
+    if response['status'] == 'success':
+        print("\nFlight Search Results:")
+        print(f"From: {response['data']['from_city']}")
+        print(f"To: {response['data']['to_city']}")
+        print(f"Date: {response['data']['date']}")
+        print("\nAvailable Flights:")
+        for flight in response['data']['flights']:
+            print(f"\nAirline: {flight['airline']}")
+            print(f"Flight Number: {flight['flight_number']}")
+            print(f"Departure: {flight['departure_time']}")
+            print(f"Arrival: {flight['arrival_time']}")
+            print(f"Price: {flight['price']}")
     else:
-        print(f"Error: {result.get('message')}")
+        print(f"\nError: {response['message']}")
 
 async def test_hotel_search():
     """Test hotel search functionality"""
@@ -162,14 +171,16 @@ async def test_agent_collaboration():
     else:
         print(f"Place search error: {place_result.get('message')}")
 
-async def main():
-    """Main test function"""
+async def async_main():
+    """Async main function."""
     print("Starting Travel Assistant Demo...")
-    print("Current date:", datetime.now().strftime("%Y-%m-%d"))
+    print(f"Current date: {datetime.now().strftime('%Y-%m-%d')}\n")
     
     try:
+        # Test flight search
+        test_flight_search()
+        
         # Test individual agents
-        await test_flight_search()
         await test_hotel_search()
         await test_place_search()
         
@@ -181,5 +192,9 @@ async def main():
         print(f"\nError during testing: {str(e)}")
         print("Please check your API keys and internet connection.")
 
+def main():
+    """Main entry point."""
+    asyncio.run(async_main())
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
